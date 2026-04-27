@@ -173,7 +173,7 @@ h1, h2, h3 { font-family: 'Syne', sans-serif; font-weight: 800; }
 # ─────────────────────────────────────────
 @st.cache_resource
 def train_model():
-    df = pd.read_csv('personalityy.csv')
+    df = pd.read_csv('personality_c.csv')
 
     le = LabelEncoder()
     y = le.fit_transform(df['personality'])
@@ -229,11 +229,11 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 st.markdown("---")
-
+st.info("Adjust sliders based on your REAL habits — not ideal ones.")
 # ─────────────────────────────────────────
 # NAME INPUT
 # ─────────────────────────────────────────
-st.subheader(' Who are you?')
+st.subheader(' Your Name...')
 name = st.text_input("", placeholder="Enter your name (optional)", label_visibility="collapsed")
 
 # ─────────────────────────────────────────
@@ -300,6 +300,16 @@ if st.button("🔮 Decode My Personality"):
     confidence = round(max(probabilities) * 100, 1)
     personality = le.inverse_transform(prediction)[0].upper()
 
+
+    probs = model.predict_proba(input_df)[0]
+    pred_index = np.argmax(probs)
+    pred_label = le.inverse_transform([pred_index])[0]
+
+    sorted_idx = np.argsort(probs)[::-1]
+    second_label = le.inverse_transform([sorted_idx[1]])[0]
+
+    confidence = round(probs[pred_index] * 100, 1)
+
     info = descriptions.get(personality, {"emoji": "🔍", "desc": "Interesting pattern."})
 
     greeting = f"**{name}**, you are a..." if name else "You are a..."
@@ -363,19 +373,21 @@ if st.button("🔮 Decode My Personality"):
         reasons.append("low stress levels")
 
     if focus >= 7:
-        reasons.append("strong focus ability")
+        reasons.append("you maintain strong internal focus even in stimulating environments")
 
-   
+    st.write("\n\n")
    
     #st.info(f"Secondary tendency: {secondary}")
     #st.write(f"Confidence: {confidence}%")
+
+    st.info(f"Secondary tendency: {second_label}")
 
     st.markdown("### 🧠 Why?")
     for r in reasons:
         st.write(f"• {r}")
 
-    
 
+    st.caption("⚠️ Personality is complex. This model detects patterns, not absolute truths.")
    
     entry = {
         'name': name if name else 'Anonymous',
@@ -394,6 +406,8 @@ if st.button("🔮 Decode My Personality"):
     else:
         entries_df = pd.DataFrame([entry])
     entries_df.to_csv(entries_file, index=False)
+
+
 
 
 st.markdown("""
