@@ -174,6 +174,7 @@ h1, h2, h3 { font-family: 'Syne', sans-serif; font-weight: 800; }
 @st.cache_resource
 def train_model():
     df = pd.read_csv('personality_c.csv')
+    #df = pd.read_csv('personalityy.csv')
 
     le = LabelEncoder()
     y = le.fit_transform(df['personality'])
@@ -380,11 +381,34 @@ if st.button("🔮 Decode My Personality"):
     #st.info(f"Secondary tendency: {secondary}")
     #st.write(f"Confidence: {confidence}%")
 
-    st.info(f"Secondary tendency: {second_label}")
+    st.info(f"Secondary tendency: {secondary}")
 
     st.markdown("### 🧠 Why?")
     for r in reasons:
         st.write(f"• {r}")
+
+
+    probs = model.predict_proba(input_scaled)[0]
+
+    labels = le.classes_
+
+    fig2, ax2 = plt.subplots(figsize=(5, 5))
+    fig2.patch.set_facecolor('#0d0d0d')
+    ax2.set_facecolor('#0d0d0d')
+
+    colors = ['#00ff87', '#60efff', '#ff6a00', '#ffcc00']
+    wedges, texts, autotexts = ax2.pie(probs, labels=[l.upper() for l in labels], autopct='%1.1f%%', startangle=90, wedgeprops={"linewidth":2, 'edgecolor': '#080808'}, colors=colors, textprops={'color': '#ccc', 'fontsize': 8})
+    for autotext in autotexts:
+        autotext.set_color('#080808')
+        autotext.set_fontweight('bold')
+
+    ax2.legend(wedges, [l.upper() for l in labels], title="Personalities", loc="lower center", bbox_to_anchor=(0.5, -0.15), fontsize=8, title_fontsize=10, frameon=False, ncol=2, labelcolor='#ccc', framealpha=0)
+
+    ax2.set_title("Personality Breakdown", color='#00ff87', fontsize=12,
+                  fontfamily='monospace', pad=15)
+    plt.tight_layout()
+    st.pyplot(fig2)
+    plt.close()
 
 
     st.caption("⚠️ Personality is complex. This model detects patterns, not absolute truths.")
