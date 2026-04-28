@@ -380,6 +380,9 @@ if st.button("🔮 Decode My Personality"):
    
     #st.info(f"Secondary tendency: {secondary}")
     #st.write(f"Confidence: {confidence}%")
+    probs_dict = dict(zip(le.classes_, probabilities))
+    sorted_probs = sorted(probs_dict.items(), key=lambda x: x[1], reverse=True)
+    secondary = sorted_probs[1][0]
 
     st.info(f"Secondary tendency: {secondary}")
 
@@ -436,7 +439,6 @@ if st.button("🔮 Decode My Personality"):
 
 st.markdown("""
 <div class="footer">
-    Built by Ajibola  &nbsp;•&nbsp; Guided by faith &nbsp;•&nbsp; NexusMind 🧠 v01
+    Built by Ajibola  &nbsp;•&nbsp; Guided by faith &nbsp;•&nbsp; NexusMind 🧠 v01.
 </div>
 """, unsafe_allow_html=True)
-
